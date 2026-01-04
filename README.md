@@ -16,12 +16,30 @@ PocketBank er en Progressive Web App (PWA) designet til at give dig økonomisk o
 - **Offline-venlig**: Fungerer uden internetforbindelse
 - **Installerbar**: Kan installeres som en app på din mobil
 
+## Live Demo
+
+Appen er deployed via GitHub Pages og kan tilgås her:
+
+**https://mikkelreuter-cloud.github.io/PocketBank/**
+
+Du kan installere appen direkte fra dette link på din mobil eller computer.
+
 ## Opsætning
 
 ### Krav
 
 - En moderne webbrowser (Chrome, Safari, Firefox, Edge)
 - En lokal webserver til udvikling
+
+### GitHub Pages Deployment
+
+Appen deployes automatisk til GitHub Pages når der pushes til `main` eller `claude/danish-budget-pwa-ZaAoX` branches.
+
+For at aktivere GitHub Pages første gang:
+1. Gå til repository Settings
+2. Vælg "Pages" i venstre menu
+3. Under "Source", vælg "GitHub Actions"
+4. Næste push vil automatisk deploye appen
 
 ### Udvikling
 
