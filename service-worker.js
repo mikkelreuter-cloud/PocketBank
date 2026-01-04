@@ -1,10 +1,11 @@
 const CACHE_NAME = 'pocketbank-v1';
+// Use relative paths for GitHub Pages compatibility
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/styles.css',
-  '/app.js',
-  '/manifest.json'
+  './',
+  './index.html',
+  './styles.css',
+  './app.js',
+  './manifest.json'
 ];
 
 self.addEventListener('install', (event) => {

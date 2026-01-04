@@ -2,7 +2,7 @@
   "name": "PocketBank",
   "short_name": "PocketBank",
   "description": "Økonomisk ro. Klarhed uden støj.",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#F5F3EF",
   "theme_color": "#F5F3EF",
