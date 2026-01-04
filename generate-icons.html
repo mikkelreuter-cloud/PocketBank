@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Generate Icons</title>
+</head>
+<body>
+  <h2>Icon Generator</h2>
+  <p>Click the buttons to download the app icons:</p>
+  <button onclick="generateIcon(192)">Download 192x192 Icon</button>
+  <button onclick="generateIcon(512)">Download 512x512 Icon</button>
+
+  <script>
+    function generateIcon(size) {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // Background
+      ctx.fillStyle = '#F5F3EF';
+      ctx.fillRect(0, 0, size, size);
+
+      // Circle
+      const centerX = size / 2;
+      const centerY = size / 2;
+      const radius = size * 0.23;
+
+      ctx.strokeStyle = '#8B9A7E';
+      ctx.lineWidth = size * 0.023;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Clock hands
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      // Hour hand (pointing up)
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.lineTo(centerX, centerY - radius * 0.6);
+      ctx.stroke();
+
+      // Minute hand (pointing right)
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.lineTo(centerX + radius * 0.7, centerY);
+      ctx.stroke();
+
+      // Download
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `icon-${size}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+  </script>
+</body>
+</html>

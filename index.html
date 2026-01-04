@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Økonomisk ro. Klarhed uden støj.">
+  <meta name="theme-color" content="#F5F3EF">
+  <title>PocketBank</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" type="image/png" href="/icon-192.png">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1 class="app-title">PocketBank</h1>
+      <p class="tagline">Økonomisk ro. Klarhed uden støj.</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-view="overview">Overblik</button>
+      <button class="nav-tab" data-view="budget">Budget</button>
+      <button class="nav-tab" data-view="savings">Opsparing</button>
+    </nav>
+
+    <!-- Overview View -->
+    <section id="view-overview" class="view active">
+      <div class="month-selector">
+        <button id="prev-month" class="month-nav" aria-label="Forrige måned">‹</button>
+        <h2 id="current-month" class="current-month"></h2>
+        <button id="next-month" class="month-nav" aria-label="Næste måned">›</button>
+      </div>
+
+      <div class="balance-card">
+        <p class="balance-label">Dit rådighedsbeløb</p>
+        <p id="disposable-amount" class="balance-amount">0 kr</p>
+        <div class="balance-details">
+          <div class="balance-row">
+            <span>Indtægter</span>
+            <span id="total-income">0 kr</span>
+          </div>
+          <div class="balance-row">
+            <span>Udgifter</span>
+            <span id="total-expenses">0 kr</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="savings-overview" class="savings-overview">
+        <h3 class="section-title">Dine opsparingsmål</h3>
+        <div id="savings-list-overview" class="savings-list"></div>
+      </div>
+    </section>
+
+    <!-- Budget View -->
+    <section id="view-budget" class="view">
+      <div class="month-selector">
+        <button id="budget-prev-month" class="month-nav" aria-label="Forrige måned">‹</button>
+        <h2 id="budget-current-month" class="current-month"></h2>
+        <button id="budget-next-month" class="month-nav" aria-label="Næste måned">›</button>
+      </div>
+
+      <div class="budget-section">
+        <div class="section-header">
+          <h3 class="section-title">Indtægter</h3>
+          <button id="add-income-btn" class="add-btn">Tilføj indtægt</button>
+        </div>
+        <div id="income-list" class="transaction-list"></div>
+      </div>
+
+      <div class="budget-section">
+        <div class="section-header">
+          <h3 class="section-title">Udgifter</h3>
+          <button id="add-expense-btn" class="add-btn">Tilføj udgift</button>
+        </div>
+        <div id="expense-list" class="transaction-list"></div>
+      </div>
+
+      <div class="budget-summary">
+        <div class="summary-row">
+          <span>I alt indtægter</span>
+          <span id="budget-total-income">0 kr</span>
+        </div>
+        <div class="summary-row">
+          <span>I alt udgifter</span>
+          <span id="budget-total-expenses">0 kr</span>
+        </div>
+        <div class="summary-row highlight">
+          <span>Rådighedsbeløb</span>
+          <span id="budget-disposable">0 kr</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Savings View -->
+    <section id="view-savings" class="view">
+      <div class="section-header">
+        <h2 class="section-title">Opsparingsmål</h2>
+        <button id="add-savings-btn" class="add-btn">Nyt mål</button>
+      </div>
+      <div id="savings-list" class="savings-list"></div>
+    </section>
+
+    <!-- Modal for adding/editing income -->
+    <div id="income-modal" class="modal">
+      <div class="modal-content">
+        <h3 class="modal-title">Indtægt</h3>
+        <form id="income-form">
+          <input type="hidden" id="income-id">
+          <div class="form-group">
+            <label for="income-description">Beskrivelse</label>
+            <input type="text" id="income-description" required placeholder="F.eks. Løn">
+          </div>
+          <div class="form-group">
+            <label for="income-amount">Beløb</label>
+            <input type="number" id="income-amount" required placeholder="0" step="0.01">
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" id="cancel-income">Annuller</button>
+            <button type="submit" class="btn-primary">Gem</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal for adding/editing expense -->
+    <div id="expense-modal" class="modal">
+      <div class="modal-content">
+        <h3 class="modal-title">Udgift</h3>
+        <form id="expense-form">
+          <input type="hidden" id="expense-id">
+          <div class="form-group">
+            <label for="expense-category">Kategori</label>
+            <select id="expense-category" required>
+              <option value="">Vælg kategori</option>
+              <option value="Bolig">Bolig</option>
+              <option value="Mad">Mad</option>
+              <option value="Transport">Transport</option>
+              <option value="Sundhed">Sundhed</option>
+              <option value="Fritid">Fritid</option>
+              <option value="Tøj">Tøj</option>
+              <option value="Gaver">Gaver</option>
+              <option value="Andet">Andet</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="expense-description">Beskrivelse</label>
+            <input type="text" id="expense-description" required placeholder="F.eks. Husleje">
+          </div>
+          <div class="form-group">
+            <label for="expense-amount">Beløb</label>
+            <input type="number" id="expense-amount" required placeholder="0" step="0.01">
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" id="cancel-expense">Annuller</button>
+            <button type="submit" class="btn-primary">Gem</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal for adding/editing savings goal -->
+    <div id="savings-modal" class="modal">
+      <div class="modal-content">
+        <h3 class="modal-title">Opsparingsmål</h3>
+        <form id="savings-form">
+          <input type="hidden" id="savings-id">
+          <div class="form-group">
+            <label for="savings-name">Navn</label>
+            <input type="text" id="savings-name" required placeholder="F.eks. Ferie">
+          </div>
+          <div class="form-group">
+            <label for="savings-target">Samlet beløb</label>
+            <input type="number" id="savings-target" required placeholder="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="savings-monthly">Månedligt beløb</label>
+            <input type="number" id="savings-monthly" required placeholder="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="savings-current">Nuværende beløb</label>
+            <input type="number" id="savings-current" placeholder="0" step="0.01" value="0">
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" id="cancel-savings">Annuller</button>
+            <button type="submit" class="btn-primary">Gem</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

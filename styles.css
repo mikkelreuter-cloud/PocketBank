@@ -1,0 +1,497 @@
+/* PocketBank - Kindle-inspired calm design */
+
+:root {
+  --color-background: #F5F3EF;
+  --color-surface: #FEFDFB;
+  --color-text: #2C2A26;
+  --color-text-muted: #6B6863;
+  --color-border: #E0DDD5;
+  --color-accent: #8B9A7E;
+  --color-accent-light: #A8B89E;
+
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  --font-size-base: 18px;
+  --font-size-large: 24px;
+  --font-size-xlarge: 32px;
+  --font-size-small: 16px;
+  --font-size-xsmall: 14px;
+
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+
+  --border-radius: 8px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  text-align: center;
+  padding: var(--spacing-lg) 0;
+  margin-bottom: var(--spacing-md);
+}
+
+.app-title {
+  font-size: var(--font-size-large);
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-xs);
+}
+
+.tagline {
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+  font-weight: 300;
+}
+
+/* Navigation */
+.nav-tabs {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.nav-tab {
+  flex: 1;
+  padding: var(--spacing-sm);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-family);
+}
+
+.nav-tab:hover {
+  color: var(--color-text);
+}
+
+.nav-tab.active {
+  color: var(--color-text);
+  border-bottom-color: var(--color-accent);
+}
+
+/* Views */
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+/* Month Selector */
+.month-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+}
+
+.month-nav {
+  background: none;
+  border: none;
+  font-size: var(--font-size-large);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.month-nav:hover {
+  color: var(--color-text);
+}
+
+.current-month {
+  font-size: var(--font-size-large);
+  font-weight: 400;
+  color: var(--color-text);
+}
+
+/* Balance Card */
+.balance-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+}
+
+.balance-label {
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-sm);
+}
+
+.balance-amount {
+  font-size: var(--font-size-xlarge);
+  font-weight: 400;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-lg);
+}
+
+.balance-details {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--spacing-md);
+}
+
+.balance-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-xs) 0;
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+}
+
+/* Section Titles */
+.section-title {
+  font-size: var(--font-size-large);
+  font-weight: 400;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-md);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Buttons */
+.add-btn {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-small);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-family);
+}
+
+.add-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  color: var(--color-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-family);
+}
+
+.btn-primary:hover {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent-light);
+}
+
+.btn-secondary {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-family);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-text-muted);
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  font-size: var(--font-size-small);
+  transition: color 0.2s ease;
+  font-family: var(--font-family);
+}
+
+.btn-delete:hover {
+  color: var(--color-text);
+}
+
+/* Transaction List */
+.transaction-list {
+  margin-bottom: var(--spacing-lg);
+}
+
+.transaction-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transaction-info {
+  flex: 1;
+}
+
+.transaction-category {
+  font-size: var(--font-size-xsmall);
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+
+.transaction-description {
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+
+.transaction-amount {
+  font-size: var(--font-size-large);
+  font-weight: 400;
+  color: var(--color-text);
+  margin-right: var(--spacing-sm);
+}
+
+.transaction-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+/* Budget Summary */
+.budget-summary {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+}
+
+.summary-row.highlight {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--spacing-md);
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-large);
+  color: var(--color-text);
+}
+
+/* Budget Section */
+.budget-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+/* Savings */
+.savings-overview {
+  margin-top: var(--spacing-xl);
+}
+
+.savings-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.savings-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+}
+
+.savings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.savings-name {
+  font-size: var(--font-size-large);
+  font-weight: 400;
+  color: var(--color-text);
+}
+
+.savings-progress-bar {
+  background: var(--color-border);
+  height: 4px;
+  border-radius: 2px;
+  margin-bottom: var(--spacing-md);
+  overflow: hidden;
+}
+
+.savings-progress-fill {
+  background: var(--color-accent);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.savings-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+}
+
+.savings-detail-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.savings-empty {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(44, 42, 38, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--color-surface);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  max-width: 400px;
+  width: 100%;
+}
+
+.modal-title {
+  font-size: var(--font-size-large);
+  font-weight: 400;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+  display: block;
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xs);
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: var(--spacing-sm);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+}
+
+.form-actions button {
+  flex: 1;
+}
+
+/* Empty States */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--color-text-muted);
+}
+
+/* Responsive adjustments for very small screens */
+@media (max-width: 360px) {
+  :root {
+    --font-size-base: 16px;
+    --font-size-large: 20px;
+    --font-size-xlarge: 28px;
+  }
+
+  .container {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* Touch-friendly tap targets */
+button,
+.transaction-item {
+  -webkit-tap-highlight-color: transparent;
+}
