@@ -368,9 +368,6 @@ class PocketBank {
     const currentMonthKey = this.getMonthKey(today);
     const { totalIncome, totalExpenses, disposable } = this.calculateTotals(currentMonthKey);
 
-    // Update month display
-    document.getElementById('current-month').textContent = this.formatMonth(today);
-
     // Update balance card
     document.getElementById('disposable-amount').textContent = this.formatCurrency(disposable);
     document.getElementById('total-income').textContent = this.formatCurrency(totalIncome);
@@ -419,9 +416,6 @@ class PocketBank {
     const currentMonthKey = this.getMonthKey(today);
     const monthData = this.getMonthData(currentMonthKey);
     const { totalIncome, totalExpenses, disposable } = this.calculateTotals(currentMonthKey);
-
-    // Update month display
-    document.getElementById('budget-current-month').textContent = this.formatMonth(today);
 
     // Update income list
     const incomeList = document.getElementById('income-list');
