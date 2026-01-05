@@ -32,7 +32,8 @@ class PocketBank {
     }
     return {
       budgets: {}, // Keyed by 'YYYY-MM'
-      savings: []
+      savings: [],
+      recurringExpenses: [] // Fixed expenses that repeat every month
     };
   }
 
@@ -52,8 +53,35 @@ class PocketBank {
         income: [],
         expenses: []
       };
+      // Auto-populate recurring expenses for new months
+      this.populateRecurringExpenses(monthKey);
     }
     return this.data.budgets[monthKey];
+  }
+
+  populateRecurringExpenses(monthKey) {
+    if (!this.data.recurringExpenses) {
+      this.data.recurringExpenses = [];
+    }
+
+    const monthData = this.data.budgets[monthKey];
+    this.data.recurringExpenses.forEach(recurring => {
+      // Check if this recurring expense is already in the month
+      const exists = monthData.expenses.some(exp =>
+        exp.recurringId === recurring.id
+      );
+
+      if (!exists) {
+        monthData.expenses.push({
+          id: Date.now() + Math.random(),
+          category: recurring.category,
+          description: recurring.description,
+          amount: recurring.amount,
+          recurringId: recurring.id,
+          isRecurring: true
+        });
+      }
+    });
   }
 
   // Month Navigation
@@ -149,30 +177,81 @@ class PocketBank {
   }
 
   // Expense Management
-  addExpense(category, description, amount) {
-    const monthKey = this.getMonthKey();
-    const monthData = this.getMonthData(monthKey);
+  addExpense(category, description, amount, isRecurring = false) {
+    if (isRecurring) {
+      // Add to recurring expenses
+      const recurring = {
+        id: Date.now(),
+        category,
+        description,
+        amount: parseFloat(amount)
+      };
+      this.data.recurringExpenses.push(recurring);
 
-    monthData.expenses.push({
-      id: Date.now(),
-      category,
-      description,
-      amount: parseFloat(amount)
-    });
+      // Add to all existing months
+      Object.keys(this.data.budgets).forEach(monthKey => {
+        const monthData = this.data.budgets[monthKey];
+        monthData.expenses.push({
+          id: Date.now() + Math.random(),
+          category,
+          description,
+          amount: parseFloat(amount),
+          recurringId: recurring.id,
+          isRecurring: true
+        });
+      });
+    } else {
+      // Regular one-time expense
+      const monthKey = this.getMonthKey();
+      const monthData = this.getMonthData(monthKey);
+
+      monthData.expenses.push({
+        id: Date.now(),
+        category,
+        description,
+        amount: parseFloat(amount),
+        isRecurring: false
+      });
+    }
 
     this.saveData();
     this.updateAllViews();
   }
 
-  editExpense(id, category, description, amount) {
+  editExpense(id, category, description, amount, isRecurring = false) {
     const monthKey = this.getMonthKey();
     const monthData = this.getMonthData(monthKey);
 
     const item = monthData.expenses.find(e => e.id === id);
     if (item) {
-      item.category = category;
-      item.description = description;
-      item.amount = parseFloat(amount);
+      // If it's a recurring expense being edited
+      if (item.isRecurring && item.recurringId) {
+        // Update the recurring template
+        const recurring = this.data.recurringExpenses.find(r => r.id === item.recurringId);
+        if (recurring) {
+          recurring.category = category;
+          recurring.description = description;
+          recurring.amount = parseFloat(amount);
+
+          // Update all instances across all months
+          Object.keys(this.data.budgets).forEach(mk => {
+            const md = this.data.budgets[mk];
+            md.expenses.forEach(exp => {
+              if (exp.recurringId === item.recurringId) {
+                exp.category = category;
+                exp.description = description;
+                exp.amount = parseFloat(amount);
+              }
+            });
+          });
+        }
+      } else {
+        // Regular expense edit
+        item.category = category;
+        item.description = description;
+        item.amount = parseFloat(amount);
+      }
+
       this.saveData();
       this.updateAllViews();
     }
@@ -182,35 +261,74 @@ class PocketBank {
     const monthKey = this.getMonthKey();
     const monthData = this.getMonthData(monthKey);
 
-    monthData.expenses = monthData.expenses.filter(e => e.id !== id);
+    const expense = monthData.expenses.find(e => e.id === id);
+
+    // If it's a recurring expense, remove from all months and recurring list
+    if (expense && expense.isRecurring && expense.recurringId) {
+      // Remove from recurring expenses
+      this.data.recurringExpenses = this.data.recurringExpenses.filter(
+        r => r.id !== expense.recurringId
+      );
+
+      // Remove from all months
+      Object.keys(this.data.budgets).forEach(mk => {
+        const md = this.data.budgets[mk];
+        md.expenses = md.expenses.filter(e => e.recurringId !== expense.recurringId);
+      });
+    } else {
+      // Regular expense, just remove from current month
+      monthData.expenses = monthData.expenses.filter(e => e.id !== id);
+    }
+
     this.saveData();
     this.updateAllViews();
   }
 
   // Savings Management
-  addSavings(name, target, monthly, current = 0) {
+  addSavings(name, target, current, startDate, endDate) {
+    const monthly = this.calculateMonthlyAmount(target, current, startDate, endDate);
+
     this.data.savings.push({
       id: Date.now(),
       name,
       target: parseFloat(target),
-      monthly: parseFloat(monthly),
-      current: parseFloat(current)
+      current: parseFloat(current),
+      startDate,
+      endDate,
+      monthly
     });
 
     this.saveData();
     this.updateAllViews();
   }
 
-  editSavings(id, name, target, monthly, current) {
+  editSavings(id, name, target, current, startDate, endDate) {
     const item = this.data.savings.find(s => s.id === id);
     if (item) {
       item.name = name;
       item.target = parseFloat(target);
-      item.monthly = parseFloat(monthly);
       item.current = parseFloat(current);
+      item.startDate = startDate;
+      item.endDate = endDate;
+      item.monthly = this.calculateMonthlyAmount(target, current, startDate, endDate);
       this.saveData();
       this.updateAllViews();
     }
+  }
+
+  calculateMonthlyAmount(target, current, startDate, endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Calculate months between dates
+    const monthsDiff = (end.getFullYear() - start.getFullYear()) * 12 +
+                       (end.getMonth() - start.getMonth()) + 1;
+
+    const remaining = parseFloat(target) - parseFloat(current);
+
+    if (monthsDiff <= 0 || remaining <= 0) return 0;
+
+    return remaining / monthsDiff;
   }
 
   deleteSavings(id) {
@@ -322,7 +440,7 @@ class PocketBank {
       expenseList.innerHTML = monthData.expenses.map(item => `
         <div class="transaction-item">
           <div class="transaction-info">
-            <div class="transaction-category">${item.category}</div>
+            <div class="transaction-category">${item.category}${item.isRecurring ? ' • Fast' : ''}</div>
             <div class="transaction-description">${item.description}</div>
           </div>
           <span class="transaction-amount">${this.formatCurrency(item.amount)}</span>
@@ -429,10 +547,12 @@ class PocketBank {
         document.getElementById('expense-category').value = item.category;
         document.getElementById('expense-description').value = item.description;
         document.getElementById('expense-amount').value = item.amount;
+        document.getElementById('expense-recurring').checked = item.isRecurring || false;
       }
     } else {
       form.reset();
       document.getElementById('expense-id').value = '';
+      document.getElementById('expense-recurring').checked = false;
     }
 
     modal.classList.add('active');
@@ -452,12 +572,20 @@ class PocketBank {
         document.getElementById('savings-id').value = item.id;
         document.getElementById('savings-name').value = item.name;
         document.getElementById('savings-target').value = item.target;
-        document.getElementById('savings-monthly').value = item.monthly;
         document.getElementById('savings-current').value = item.current;
+        document.getElementById('savings-start-date').value = item.startDate || '';
+        document.getElementById('savings-end-date').value = item.endDate || '';
+
+        // Show calculated monthly amount
+        if (item.startDate && item.endDate) {
+          document.getElementById('monthly-amount-display').textContent = this.formatCurrency(item.monthly);
+          document.getElementById('calculated-monthly').style.display = 'block';
+        }
       }
     } else {
       form.reset();
       document.getElementById('savings-id').value = '';
+      document.getElementById('calculated-monthly').style.display = 'none';
     }
 
     modal.classList.add('active');
@@ -513,11 +641,12 @@ class PocketBank {
       const category = document.getElementById('expense-category').value;
       const description = document.getElementById('expense-description').value;
       const amount = document.getElementById('expense-amount').value;
+      const isRecurring = document.getElementById('expense-recurring').checked;
 
       if (id) {
-        this.editExpense(parseInt(id), category, description, amount);
+        this.editExpense(parseInt(id), category, description, amount, isRecurring);
       } else {
-        this.addExpense(category, description, amount);
+        this.addExpense(category, description, amount, isRecurring);
       }
       this.closeExpenseModal();
     });
@@ -530,16 +659,38 @@ class PocketBank {
       const id = document.getElementById('savings-id').value;
       const name = document.getElementById('savings-name').value;
       const target = document.getElementById('savings-target').value;
-      const monthly = document.getElementById('savings-monthly').value;
       const current = document.getElementById('savings-current').value || 0;
+      const startDate = document.getElementById('savings-start-date').value;
+      const endDate = document.getElementById('savings-end-date').value;
 
       if (id) {
-        this.editSavings(parseInt(id), name, target, monthly, current);
+        this.editSavings(parseInt(id), name, target, current, startDate, endDate);
       } else {
-        this.addSavings(name, target, monthly, current);
+        this.addSavings(name, target, current, startDate, endDate);
       }
       this.closeSavingsModal();
     });
+
+    // Update calculated monthly amount when dates change
+    const updateMonthlyDisplay = () => {
+      const target = parseFloat(document.getElementById('savings-target').value) || 0;
+      const current = parseFloat(document.getElementById('savings-current').value) || 0;
+      const startDate = document.getElementById('savings-start-date').value;
+      const endDate = document.getElementById('savings-end-date').value;
+
+      if (startDate && endDate && target > 0) {
+        const monthly = this.calculateMonthlyAmount(target, current, startDate, endDate);
+        document.getElementById('monthly-amount-display').textContent = this.formatCurrency(monthly);
+        document.getElementById('calculated-monthly').style.display = 'block';
+      } else {
+        document.getElementById('calculated-monthly').style.display = 'none';
+      }
+    };
+
+    document.getElementById('savings-target').addEventListener('input', updateMonthlyDisplay);
+    document.getElementById('savings-current').addEventListener('input', updateMonthlyDisplay);
+    document.getElementById('savings-start-date').addEventListener('change', updateMonthlyDisplay);
+    document.getElementById('savings-end-date').addEventListener('change', updateMonthlyDisplay);
 
     document.getElementById('cancel-savings').addEventListener('click', () => this.closeSavingsModal());
 
