@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pocketbank-v4';
+const CACHE_NAME = 'pocketbank-v5';
 // Use relative paths for GitHub Pages compatibility
 const urlsToCache = [
   './',

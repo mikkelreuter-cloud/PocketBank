@@ -141,7 +141,8 @@ class PocketBank {
 
   // Income Management
   addIncome(description, amount) {
-    const monthKey = this.getMonthKey();
+    const today = new Date();
+    const monthKey = this.getMonthKey(today);
     const monthData = this.getMonthData(monthKey);
 
     monthData.income.push({
@@ -155,7 +156,8 @@ class PocketBank {
   }
 
   editIncome(id, description, amount) {
-    const monthKey = this.getMonthKey();
+    const today = new Date();
+    const monthKey = this.getMonthKey(today);
     const monthData = this.getMonthData(monthKey);
 
     const item = monthData.income.find(i => i.id === id);
@@ -168,7 +170,8 @@ class PocketBank {
   }
 
   deleteIncome(id) {
-    const monthKey = this.getMonthKey();
+    const today = new Date();
+    const monthKey = this.getMonthKey(today);
     const monthData = this.getMonthData(monthKey);
 
     monthData.income = monthData.income.filter(i => i.id !== id);
@@ -202,7 +205,8 @@ class PocketBank {
       });
     } else {
       // Regular one-time expense
-      const monthKey = this.getMonthKey();
+      const today = new Date();
+      const monthKey = this.getMonthKey(today);
       const monthData = this.getMonthData(monthKey);
 
       monthData.expenses.push({
@@ -219,7 +223,8 @@ class PocketBank {
   }
 
   editExpense(id, category, description, amount, isRecurring = false) {
-    const monthKey = this.getMonthKey();
+    const today = new Date();
+    const monthKey = this.getMonthKey(today);
     const monthData = this.getMonthData(monthKey);
 
     const item = monthData.expenses.find(e => e.id === id);
@@ -258,7 +263,8 @@ class PocketBank {
   }
 
   deleteExpense(id) {
-    const monthKey = this.getMonthKey();
+    const today = new Date();
+    const monthKey = this.getMonthKey(today);
     const monthData = this.getMonthData(monthKey);
 
     const expense = monthData.expenses.find(e => e.id === id);
@@ -408,12 +414,14 @@ class PocketBank {
   }
 
   updateBudget() {
-    const monthKey = this.getMonthKey();
-    const monthData = this.getMonthData(monthKey);
-    const { totalIncome, totalExpenses, disposable } = this.calculateTotals(monthKey);
+    // Always show current month in budget
+    const today = new Date();
+    const currentMonthKey = this.getMonthKey(today);
+    const monthData = this.getMonthData(currentMonthKey);
+    const { totalIncome, totalExpenses, disposable } = this.calculateTotals(currentMonthKey);
 
     // Update month display
-    document.getElementById('budget-current-month').textContent = this.formatMonth(this.currentMonth);
+    document.getElementById('budget-current-month').textContent = this.formatMonth(today);
 
     // Update income list
     const incomeList = document.getElementById('income-list');
@@ -518,7 +526,8 @@ class PocketBank {
     const form = document.getElementById('income-form');
 
     if (id) {
-      const monthData = this.getMonthData();
+      const today = new Date();
+      const monthData = this.getMonthData(this.getMonthKey(today));
       const item = monthData.income.find(i => i.id === id);
       if (item) {
         document.getElementById('income-id').value = item.id;
@@ -542,7 +551,8 @@ class PocketBank {
     const form = document.getElementById('expense-form');
 
     if (id) {
-      const monthData = this.getMonthData();
+      const today = new Date();
+      const monthData = this.getMonthData(this.getMonthKey(today));
       const item = monthData.expenses.find(e => e.id === id);
       if (item) {
         document.getElementById('expense-id').value = item.id;
@@ -605,10 +615,6 @@ class PocketBank {
         this.switchView(tab.dataset.view);
       });
     });
-
-    // Month navigation - Budget
-    document.getElementById('budget-prev-month').addEventListener('click', () => this.previousMonth());
-    document.getElementById('budget-next-month').addEventListener('click', () => this.nextMonth());
 
     // Add buttons
     document.getElementById('add-income-btn').addEventListener('click', () => this.openIncomeModal());
