@@ -357,11 +357,13 @@ class PocketBank {
   }
 
   updateOverview() {
-    const monthKey = this.getMonthKey();
-    const { totalIncome, totalExpenses, disposable } = this.calculateTotals(monthKey);
+    // Always show current month in overview
+    const today = new Date();
+    const currentMonthKey = this.getMonthKey(today);
+    const { totalIncome, totalExpenses, disposable } = this.calculateTotals(currentMonthKey);
 
     // Update month display
-    document.getElementById('current-month').textContent = this.formatMonth(this.currentMonth);
+    document.getElementById('current-month').textContent = this.formatMonth(today);
 
     // Update balance card
     document.getElementById('disposable-amount').textContent = this.formatCurrency(disposable);
@@ -603,10 +605,6 @@ class PocketBank {
         this.switchView(tab.dataset.view);
       });
     });
-
-    // Month navigation - Overview
-    document.getElementById('prev-month').addEventListener('click', () => this.previousMonth());
-    document.getElementById('next-month').addEventListener('click', () => this.nextMonth());
 
     // Month navigation - Budget
     document.getElementById('budget-prev-month').addEventListener('click', () => this.previousMonth());
